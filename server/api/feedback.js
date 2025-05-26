@@ -74,8 +74,12 @@ module.exports = async (req, res) => {
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
       };
       
+      // Log the data we're about to save
+      console.log('Saving feedback data:', JSON.stringify(feedbackData));
+      
       // Save to Firestore
       const docRef = await db.collection('feedback').add(feedbackData);
+      console.log('Feedback saved successfully with ID:', docRef.id);
       
       return res.status(201).json({ 
         id: docRef.id,
