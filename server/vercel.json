@@ -9,7 +9,7 @@
   ],
   "headers": [
     {
-      "source": "/(.*)",
+      "source": "/api/(.*)",
       "headers": [
         { "key": "Access-Control-Allow-Credentials", "value": "true" },
         { "key": "Access-Control-Allow-Origin", "value": "*" },
@@ -20,7 +20,7 @@
   ],
   "rewrites": [
     { "source": "/api/health", "destination": "/api/health.js" },
-    { "source": "/api/feedback", "destination": "/api/feedback.js" },
-    { "source": "/api/api/feedback", "destination": "/api/feedback.js" }
+    { "source": "/api/feedback", "destination": "/api/feedback-file.js" },
+    { "source": "/api/api/feedback", "destination": "/api/feedback-file.js" }
   ]
 }
