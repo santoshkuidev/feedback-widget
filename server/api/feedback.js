@@ -22,7 +22,9 @@ if (!admin.apps.length) {
   try {
     // Use the full service account object directly
     admin.initializeApp({
-      credential: admin.credential.cert(firebaseConfig)
+      credential: admin.credential.cert(firebaseConfig),
+      databaseURL: `https://${firebaseConfig.project_id}.firebaseio.com`,
+      projectId: firebaseConfig.project_id
     });
     
     console.log('Firebase Admin SDK initialized successfully');
@@ -81,14 +83,37 @@ module.exports = async (req, res) => {
       // Log the data we're about to save
       console.log('Saving feedback data:', JSON.stringify(feedbackData));
       
-      // Save to Firestore
-      const docRef = await db.collection('feedback').add(feedbackData);
-      console.log('Feedback saved successfully with ID:', docRef.id);
-      
-      return res.status(201).json({ 
-        id: docRef.id,
-        message: 'Feedback submitted successfully' 
-      });
+      try {
+        // First check if the collection exists, if not create it
+        const feedbackCollection = db.collection('feedback');
+        
+        // Save to Firestore
+        console.log('Attempting to save to Firestore...');
+        const docRef = await feedbackCollection.add(feedbackData);
+        console.log('Feedback saved successfully with ID:', docRef.id);
+        
+        return res.status(201).json({ 
+          id: docRef.id,
+          message: 'Feedback submitted successfully' 
+        });
+      } catch (innerError) {
+        console.error('Inner error saving to Firestore:', innerError);
+        
+        // Try to save to a different collection as a fallback
+        try {
+          console.log('Trying fallback collection...');
+          const fallbackRef = await db.collection('feedbacks').add(feedbackData);
+          console.log('Feedback saved to fallback collection with ID:', fallbackRef.id);
+          
+          return res.status(201).json({ 
+            id: fallbackRef.id,
+            message: 'Feedback submitted successfully (fallback)' 
+          });
+        } catch (fallbackError) {
+          console.error('Fallback save also failed:', fallbackError);
+          throw new Error(`Failed to save feedback: ${innerError.message}`);
+        }
+      }
     } catch (error) {
       console.error('Error submitting feedback:', error);
       return res.status(500).json({ error: 'Failed to submit feedback' });
