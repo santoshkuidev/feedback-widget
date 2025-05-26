@@ -1,0 +1,31 @@
+{
+  "name": "feedback-widget",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "server"
+  ],
+  "scripts": {
+    "dev:widget": "cd packages/widget && npm run dev",
+    "dev:admin": "cd packages/admin && npm run dev",
+    "dev:server": "cd server && npm run dev",
+    "build:widget": "cd packages/widget && npm run build",
+    "build:admin": "cd packages/admin && npm run build",
+    "build:server": "cd server && npm run build",
+    "dev": "concurrently \"npm run dev:widget\" \"npm run dev:admin\" \"npm run dev:server\"",
+    "build": "npm run build:widget && npm run build:admin && npm run build:server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "feedback",
+    "widget",
+    "embeddable"
+  ],
+  "author": "",
+  "license": "MIT",
+  "description": "A lightweight, embeddable feedback widget system",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
